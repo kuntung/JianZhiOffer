@@ -79,7 +79,80 @@
 
 ![image-20210608192305087](剑指offerNotes.assets/image-20210608192305087.png)
 
+## 算法
 
+### 查找
+
+- 顺序查找
+
+-  **二 分查找** 
+
+- 哈希表查找：O(1)
+
+  > 哈希表的底层实现？
+  >
+  > 哈希冲突的解决办法
+
+- 二叉排序树**：二叉排序树的中序遍历的有序性**
+
+#### **二分查找**
+
+二分查找的应用场景：问题可以根据某种条件分为两个区间。
+
+#### 二分查找相关题型：
+
+1. 旋转数组的最小数字
+
+   ![image-20210713225745743](剑指offerNotes.assets/image-20210713225745743.png)
+
+   
+
+### 排序：
+
+- [ ] 插入排序
+- [ ] 冒泡排序
+- [ ] 选择排序
+- [ ] 快速排序
+- [ ] 归并排序
+- [ ] 堆排序
+- [ ] 希尔排序
+- [ ] 桶排序
+
+#### 快速排序
+
+```c++
+
+```
+
+#### 排序算法相关题型
+
+![image-20210713225935675](剑指offerNotes.assets/image-20210713225935675.png)
+
+
+
+#### 排序算法的分析
+
+![image-20210713224611188](剑指offerNotes.assets/image-20210713224611188.png)
+
+
+
+### 其他算法
+
+#### 回溯法
+
+回溯法可以用递归的代码实现，当不让用递归的时候，可以用栈来模拟递归的过程
+
+#### 动态规划
+
+#### 贪心算法的证明
+
+#### 位运算
+
+1. 与
+2. 或
+3. 异或
+4. 左移
+5. 右移
 
 # 剑指offer的面试题
 
@@ -560,6 +633,200 @@ vector<int> reversePrint(ListNode* head) {
 
 1. 二叉树为空的情形考虑
 
+## 栈和队列
+
+1. 通常栈（先进后出）是一个不考虑排序的数据结构，需要O(n)的时间复杂度才能找到栈中最大或最小的元素。
+
+2. 队列：先进先出
+
+### 相关题型
+
+#### [用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
+
+**题目：**用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。(若队列中没有元素，deleteHead 操作返回 -1 )
+
+**思路1：**如果只用一个栈，无法同时实现deleteHead和appendTail两个功能。因此需要用两个辅助栈来实现该功能。一个栈**模拟尾部**。另一个栈**模拟头部**。并且当头部为空的时候，将尾部的元素转移到**头部**中。
+
+```c++
+class CQueue {
+public:
+    CQueue() {
+    }
+    
+    void appendTail(int value) {
+        st1.push(value);
+    }
+    
+    int deleteHead() {
+        if(st2.empty())
+        {
+            if(st1.empty()) return -1;
+            while(!st1.empty())
+            {
+                int top = st1.top();
+                st2.push(top);
+                st1.pop();
+            }
+        }
+        int res = st2.top();
+        st2.pop();
+
+        return res;
+    }
+private:
+    stack<int> st1, st2;
+};
+```
+
+#### 用一个或者两个队列实现栈
+
+```c++
+class MyStack {
+public:
+    /** Initialize your data structure here. */
+    MyStack() {
+
+    }
+    
+    /** Push element x onto stack. */
+    void push(int x) {
+        q1.push(x);
+        while(!q2.empty())
+        {
+            q1.push(q2.front());
+            q2.pop();
+        }
+        swap(q1, q2); // 始终保持q2为后插入元素在头部的规律;
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        int res = q2.front();
+        q2.pop();
+
+        return res;
+    }
+    
+    /** Get the top element. */
+    int top() {
+        return q2.front();
+    }
+    
+    /** Returns whether the stack is empty. */
+    bool empty() {
+        return q2.empty();
+    }
+private:
+    queue<int> q1, q2;
+};
+```
+
+**用一个队列的实现代码：**
+
+## 递归和循环
+
+### 相关题型
+
+#### 斐波那契数列
+
+**题目：**求斐波那契数列的第n项，并返回该项的值。其中斐波那契的定义如下
+$$
+\begin{equation}
+f(x)=\left\{
+\begin{aligned}
+0 & &n = 0 \\
+1 &  & n =1\\
+f(n-1) + f(n-2) &  & n > 1
+\end{aligned}
+\right.
+\end{equation}
+$$
+**朴素解法：（重复计算量太大）**
+
+![image-20210713213750114](剑指offerNotes.assets/image-20210713213750114.png)
+
+**优化方案1：**将计算得到的结果保留，当需要的时候避免重复计算
+
+```c++
+class Solution {
+public:
+    long int mod = 1e9 + 7;
+    int fib(int n) {
+        vector<int> f(n+1, -1);
+        return dfs(f, n);
+    }
+
+    int dfs(vector<int>& vec, int n)
+    {
+        if (n < 2) return n;
+        else if (vec[n] != -1) return vec[n];
+
+        vec[n] = (dfs(vec, n-1) + dfs(vec, n-2)) % mod;
+
+        return vec[n];
+    }
+};
+```
+
+**优化方案2：**自底向上的思想（DP）
+
+```c++
+int fib(int n) {
+    long int mod = 1e9 + 7;
+    if (n < 2) return n;
+    int f[n + 1];
+    memset(f, 0, sizeof(f));
+    f[1] = 1;
+    for (int i = 2; i <= n; ++i)
+    {
+        f[i] = (f[i-1] + f[i-2]) % mod;
+    }
+
+    return f[n];
+}
+
+// 时间复杂度分析：O(N)
+// 空间复杂度分析：O(N)
+```
+
+**优化方案3：**滚动数组，优化空间
+
+```c++
+// 因为f(n)的值只和f(n-1)和f(n-2)有关
+class Solution {
+public:
+    long int mod = 1e9 + 7;
+    int fib(int n) {
+        if (n < 2) return n;
+        int f[2] = {0, 1};
+        for (int i = 2; i <= n; ++i)
+        {
+            f[i&1] = (f[i&1] + f[(i+1)&1]) % mod;
+        }
+
+        return f[n&1];
+    }
+};
+```
+
+### 总结
+
+- 递归由是函数调用自身，而函数调用是有**时间和空间**的消耗的： 每一次函数调用都需要在内存栈中分配空间以保存**参数、返回地址及临时变量**，而且往栈里**压入数据和弹出数据**都需要时间。这就不难理解递归实现的效率不如循环 。  
+
+- 递归的很多计算都是重复，因此可以将重叠部分通过`记忆化搜索`的方法优化
+
+  ![image-20210713213153733](剑指offerNotes.assets/image-20210713213153733.png)
+
+## 动态规划
+
+### 斐波那契型动态规划
+
+1. 青蛙跳台阶
+
+2. 矩形覆盖
+
+   
+
 # 面试小提示汇总
 
 ## 交流沟通方面
@@ -619,4 +886,6 @@ vector<int> reversePrint(ListNode* head) {
 3.  描述技能掌握程度时 也要注意 **”了解” 、 "熟悉 ”和“精通”** 的区别 。
    - **”了解”**：指对某项技术 只是上过课或者看过书 ， 但没有做过实际的项目 (不建议在简历中 列出 只是 肤浅地 了 解一点的技能，除非这项技术应聘的职位的确需要 。)
    - **熟悉：**在实际项目中使用某项技术已经有较长的时间， 通过查阅相关的文档可以独立解决大部分问题  
+
+# 知识点总结
 
